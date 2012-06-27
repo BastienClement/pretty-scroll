@@ -31,9 +31,9 @@
 	
 	// Settings handling
 	var defaults = {
-		scrollX: true,
-		scrollY: true,
-		
+		scrollX:        true,
+		scrollY:        true,
+		useFloat:       false,
 		paddingLateral: 2,
 		paddingBound:   2,
 		borderWidth:    0,
@@ -73,12 +73,18 @@
 			return this;
 		}
 		
+		var settings = $.extend(defaults, options);
+		
 		// Browser use pretty scrolls natively
 		if(scrollNativeWidth <= 0) {
+			this.each(function() {
+				$(this).css({
+					"overflow-x": settings.scrollX ? "auto" : "hidden",
+					"overflow-y": settings.scrollX ? "auto" : "hidden"
+				});
+			});
 			return this;
 		}
-		
-		var settings = $.extend(defaults, options);
 		
 		return this.each(function() {
 			var $this = $(this);
@@ -97,10 +103,10 @@
 			     .addClass("pretty-scroll");
 			
 			// Query pretty-scroll elements
-			$scroller = $this.children(".pretty-scroll-scroller");
-			$content  = $scroller.children(".pretty-scroll-content");
-			$scrollX  = $this.children(".pretty-scroll-scrollX");
-			$scrollY  = $this.children(".pretty-scroll-scrollY");
+			var $scroller = $this.children(".pretty-scroll-scroller");
+			var $content  = $scroller.children(".pretty-scroll-content");
+			var $scrollX  = $this.children(".pretty-scroll-scrollX");
+			var $scrollY  = $this.children(".pretty-scroll-scrollY");
 			
 			// Applying base CSS
 			$this.css({
@@ -112,9 +118,11 @@
 			});
 			
 			$content.css({
-				"float":    "left",     // Dynamic width
 				"position": "relative"  // For user content placing
 			});
+			
+			if(settings.useFloat)
+				$content.css({ "float":    "left" });
 			
 			$scrollX.css({height: settings.scrollWidth, bottom: settings.paddingLateral, position: "absolute"});
 			$scrollY.css({width:  settings.scrollWidth, right:  settings.paddingLateral, position: "absolute"});
@@ -146,8 +154,6 @@
 				// Effective outer width/height
 				eOuterWidth  =  outerWidth - (settings.paddingBound * 2) - (diplayY ? scrollbarWidth : 0);
 				eOuterHeight = outerHeight - (settings.paddingBound * 2) - (diplayX ? scrollbarWidth : 0);
-				
-				console.log("update scroll");
 				
 				// Scroll factors (the 1px-scroll / 1px-content ratio)
 				scrollFactorX =  eOuterWidth / innerWidth;
@@ -195,7 +201,6 @@
 				$scrollY.addClass("init");
 				
 				setTimeout(function() {
-					console.log("fuu")
 					$scrollX.removeClass("init");
 					$scrollY.removeClass("init");
 				}, settings.initTimer);
