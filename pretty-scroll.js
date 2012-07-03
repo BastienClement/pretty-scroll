@@ -256,8 +256,6 @@
 					dragging = true;
 					dragging_x_axis = x_axis;
 					
-					console.log("down")
-					
 					if(x_axis) {
 						dragging_startL = $scroller.scrollLeft();
 						dragging_startX = e.clientX;
